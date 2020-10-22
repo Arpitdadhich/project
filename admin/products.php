@@ -106,8 +106,8 @@ require 'sidebar.php';
                             <a href="<?php echo "editProduct.php?product_id=$row[product_id]&name=$row[name]&price=$row[price]&long_desc=$row[long_desc]" ?>" title="Edit">
                             <img src="resources/images/icons/pencil.png" alt="Edit"/>
                             </a> 
-                             <a href="<?php echo "deleteProduct.php?product_id=$row[product_id]" ?>" title="Delete">
-                             <img src="resources/images/icons/cross.png" alt="Delte"/>
+                            <a href="<?php echo "deleteProduct.php?product_id=$row[product_id]" ?>" title="Delete">
+                            <img src="resources/images/icons/cross.png" alt="Delte"/>
                             </a>
                             <a href="#" title="Edit Meta">
                             <img src="resources/images/icons/hammer_screwdriver.png"

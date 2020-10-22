@@ -1,7 +1,18 @@
-<?php 
+<?php
 require 'admin/config.php';
 $single_page_results = 8;
-$sql='SELECT * FROM products';
+
+
+if (isset($_GET['category'])) {
+    $category = $_GET['category'];
+    $sql= 'SELECT * FROM products WHERE category_id = '. $category ;
+} else if (isset($_GET['tag'])) {
+    $tag = $_GET['tag'];
+    $sql= 'SELECT * FROM products WHERE short_desc LIKE "%'. $tag . '%" ';
+} else {
+    $sql =  'SELECT * FROM products';
+}
+
 $result = mysqli_query($conn, $sql);
 $number_of_results = mysqli_num_rows($result);
 $number_of_pages = ceil($number_of_results/$single_page_results);
@@ -65,12 +76,21 @@ $this_page_first_result = ($page-1)*$single_page_results;
                         <ul class="aa-product-catg">
                         <!-- product from mysql table  -->
                         <?php
-                            require 'admin/config.php';
+                        require 'admin/config.php';
+                        if (isset($_GET['category'])) {
+                            $category = $_GET['category'];
+                            $sql2= 'SELECT * FROM products WHERE category_id = '. $category . ' LIMIT ' . $this_page_first_result . ',' .  $single_page_results;
+                        } else if (isset($_GET['tag'])) {
+                            $tag = $_GET['tag'];
+                            $sql2= 'SELECT * FROM products WHERE short_desc LIKE "%'. $tag . '%" LIMIT ' . $this_page_first_result . ',' .  $single_page_results;
+                        } else {
                             $sql2 =  'SELECT * FROM products LIMIT ' . $this_page_first_result . ',' .  $single_page_results;
-                            $result = mysqli_query($conn, $sql2) 
-                            or die("Error: " . mysqli_error($conn));
-                            while ($row = mysqli_fetch_array($result)) :
-                                ?>
+                        }
+                        
+                        $result = mysqli_query($conn, $sql2)
+                        or die("Error: " . mysqli_error($conn));
+                        while ($row = mysqli_fetch_array($result)) :
+                            ?>
                         <li>
                             <figure>
                                 <a class="aa-product-img" href="#"><img src="img/women/girl-1.png" alt="polo shirt img"></a>
@@ -84,7 +104,7 @@ $this_page_first_result = ($page-1)*$single_page_results;
                             <div class="aa-product-hvr-content">
                                 <!-- <a href="#" data-toggle="tooltip" data-placement="top" title="Add to Wishlist"><span class="fa fa-heart-o"></span></a>
                                     <a href="#" data-toggle="tooltip" data-placement="top" title="Compare"><span class="fa fa-exchange"></span></a> -->
-                                <a href="#" data-toggle2="tooltip" data-placement="top" title="Quick View" data-toggle="modal" data-target="#quick-view-modal"><span class="fa fa-search"></span></a>                            
+                                <a href="#" data-toggle2="tooltip" data-placement="top" title="Quick View" data-toggle="modal" data-target="#quick-view-modal"><span class="fa fa-search"></span></a>
                             </div>
                             <!-- product badge -->
                             <span class="aa-badge aa-sale" href="#">SALE!</span>
@@ -92,7 +112,7 @@ $this_page_first_result = ($page-1)*$single_page_results;
                                 <span class="aa-badge aa-hot" href="#">HOT!</span> -->
                         </li>
                         <?php endwhile ; ?>
-                        <!-- quick view modal -->                  
+                        <!-- quick view modal -->
                         <div class="modal fade" id="quick-view-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -115,7 +135,7 @@ $this_page_first_result = ($page-1)*$single_page_results;
                                                                 data-lens-image="img/view-slider/large/polo-shirt-1.png"
                                                                 data-big-image="img/view-slider/medium/polo-shirt-1.png">
                                                             <img src="img/view-slider/thumbnail/polo-shirt-1.png">
-                                                            </a>                                    
+                                                            </a>
                                                             <a href="#" class="simpleLens-thumbnail-wrapper"
                                                                 data-lens-image="img/view-slider/large/polo-shirt-3.png"
                                                                 data-big-image="img/view-slider/medium/polo-shirt-3.png">
@@ -174,7 +194,7 @@ $this_page_first_result = ($page-1)*$single_page_results;
                             </div>
                             <!-- /.modal-dialog -->
                         </div>
-                        <!-- / quick view modal -->   
+                        <!-- / quick view modal -->
                     </div>
                     <div class="aa-product-catg-pagination">
                         <nav>
@@ -195,32 +215,32 @@ $this_page_first_result = ($page-1)*$single_page_results;
                                     </a>
                                 </li> -->
                                 <li>
-                                    <?php if($page > 1 ) : ?>
-                                        <a href="product.php?page=<?php echo $page-1; ?>" aria-label="Previous">
-                                            <span aria-hidden="true">&laquo;</span>
-                                        </a>
-                                    <?php endif; ?>
-                                </li>
-                                <?php
-                                for ($page=1;$page<=$number_of_pages;$page++) {
-                                    echo '<li><a href="product.php?page=' . $page . '">' . $page . '</a><li> ';
-                                }
-                                ?>
-                                <li>
-                                <?php if (!isset($_GET['page'])) { ?>
-                                        <a href="product.php?page=<?php echo 2; ?>" aria-label="Next">
-                                          <span aria-hidden="true">&raquo;</span>
-                                        </a>
-                                    <?php
+                              <?php if($page > 1 ) : ?>
+                                <a href="product.php?page=<?php echo $page-1; ?>" aria-label="Previous">
+                                  <span aria-hidden="true">&laquo;</span>
+                                </a>
+                              <?php endif; ?>
+                            </li>
+                            <?php
+                            for ($page=1;$page<=$number_of_pages;$page++) {
+                                echo '<li><a href="product.php?page=' . $page . '">' . $page . '</a></li> ';
+                            }
+                            ?>
+                            <li>
+                              <?php if (!isset($_GET['page'])) { ?>
+                                      <a href="product.php?page=<?php echo 2; ?>" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                      </a>
+                                      <?php
 
-                                } elseif ($_GET['page'] < $number_of_pages) {
+                              } elseif ($_GET['page'] < $number_of_pages) {
                                     ?>
-                                        <a href="product.php?page=<?php echo $_GET['page']+1; ?>" aria-label="Next">
-                                          <span aria-hidden="true">&raquo;</span>
-                                        </a>
-                                    <?php
-                                } ?>
-                                </li>
+                                      <a href="product.php?page=<?php echo $_GET['page']+1; ?>" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                      </a>
+                                  <?php
+                              } ?>
+                            </li>
                             </ul>
                         </nav>
                     </div>
@@ -235,7 +255,7 @@ $this_page_first_result = ($page-1)*$single_page_results;
                             <?php
                                 require 'admin/config.php';
                                 $sql2 = "SELECT * FROM category";
-                                $result = mysqli_query($conn, $sql2) 
+                                $result = mysqli_query($conn, $sql2)
                                 or die("Error: " . mysqli_error($conn));
                                 while ($row = mysqli_fetch_array($result)) :
                                     ?>
@@ -253,11 +273,11 @@ $this_page_first_result = ($page-1)*$single_page_results;
                             <?php
                                 require 'admin/config.php';
                                 $sql2 = "SELECT * FROM tags";
-                                $result = mysqli_query($conn, $sql2) 
+                                $result = mysqli_query($conn, $sql2)
                                 or die("Error: " . mysqli_error($conn));
                                 while ($row = mysqli_fetch_array($result)) :
                                     ?>
-                            <?php echo "<a href='product.php?tag=$row[tag_id]'>" ;
+                            <?php echo "<a href='product.php?tag=$row[name]'>" ;
                                 echo $row['name'];
                                 echo '</a>' ;?></li>
                             <?php endwhile ; ?>
